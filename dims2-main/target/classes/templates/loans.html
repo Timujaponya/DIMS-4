@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Loan List</title>
+  <!-- Bootstrap & Icons CDN -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="p-4">
+<div class="container">
+  <h2 class="text-center">Loan List</h2>
+  <div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+  </div>
+  <div class="mb-3">
+    <a class="btn btn-primary" th:href="@{/}">
+      <i class="bi bi-arrow-left"></i> Go Back
+    </a>
+  </div>
+
+  <table class="table table-bordered align-middle">
+    <thead>
+    <tr class="table-light">
+      <th>ID</th>
+      <th>CUST ID</th>
+      <th>ACC ID</th>
+      <th>CUSTOMER</th>
+      <th>ADDRESS</th>
+      <th>CITY</th>
+      <th>BRANCH</th>
+      <th>BALANCE</th>
+      <th>LOAN DATE</th>
+      <th>AMOUNT</th>
+      <th>OPERATIONS</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="loan : ${loans}">
+      <td th:text="${loan.id}"></td>
+      <td th:text="${loan.customer.id}"></td>
+      <td th:text="${loan.account.id}"></td>
+      <td th:text="${loan.customer.name}"></td>
+      <td th:text="${loan.customer.address}"></td>
+      <td th:text="${loan.customer.city}"></td>
+      <td th:text="${loan.account.branch}"></td>
+      <td th:text="${loan.account.balance}"></td>
+      <td th:text="${loan.loanDate}"></td>
+      <td th:text="${loan.amount}"></td>
+      <td>
+        <!-- Update -->
+        <button class="btn btn-warning btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#updateLoanModal"
+                th:attr="data-id=${loan.id},
+                         data-customerid=${loan.customer.id},
+                         data-customername=${loan.customer.name},
+                         data-customeraddress=${loan.customer.address},
+                         data-customercity=${loan.customer.city},
+                         data-accountid=${loan.account.id},
+                         data-accountbranch=${loan.account.branch},
+                         data-accountbalance=${loan.account.balance},
+                         data-loandate=${loan.loanDate},
+                         data-amount=${loan.amount}">
+          <i class="bi bi-pencil-square"></i> Update
+        </button>
+        <!-- Delete -->
+        <button class="btn btn-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteLoanModal"
+                th:attr="data-id=${loan.id},
+                         data-customername=${loan.customer.name},
+                         data-customeraddress=${loan.customer.address},
+                         data-customercity=${loan.customer.city},
+                         data-accountbranch=${loan.account.branch},
+                         data-accountbalance=${loan.account.balance},
+                         data-loandate=${loan.loanDate},
+                         data-amount=${loan.amount}">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- UPDATE Loan Modal -->
+<div class="modal fade" id="updateLoanModal" tabindex="-1" aria-labelledby="updateLoanModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/loans/update}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateLoanModalLabel">Update Loan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Loan ID (hidden) -->
+          <input type="hidden" name="id" id="updateLoanId"/>
+          <!-- Customer ID (hidden) -->
+          <input type="hidden" name="customerId" id="updateLoanCustomerId"/>
+          <!-- Account ID (hidden) -->
+          <input type="hidden" name="accountId" id="updateLoanAccountId"/>
+          <div class="mb-3">
+            <label>Id:</label>
+            <input type="text" class="form-control" id="updateViewLoanId" readonly style="background-color: #dddddd"/>
+          </div>
+          <!-- Customer Info (read-only) -->
+          <div class="mb-3">
+            <label>Name:</label>
+            <input type="text" class="form-control" id="updateLoanCustomerName" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Address:</label>
+            <input type="text" class="form-control" id="updateLoanCustomerAddress" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>City:</label>
+            <input type="text" class="form-control" id="updateLoanCustomerCity" readonly style="background-color: #dddddd"/>
+          </div>
+
+          <!-- Account Info (read-only) -->
+          <div class="mb-3">
+            <label>Branch:</label>
+            <input type="text" class="form-control" id="updateLoanAccountBranch" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Balance:</label>
+            <input type="text" class="form-control" id="updateLoanAccountBalance" readonly style="background-color: #dddddd"/>
+          </div>
+
+          <!-- Loan Date -->
+          <div class="mb-3">
+            <label>Loan Date:</label>
+            <input type="date" class="form-control" name="loanDate" id="updateLoanDate" required/>
+          </div>
+
+          <!-- Amount -->
+          <div class="mb-3">
+            <label>Amount:</label>
+            <input type="number" step="0.01" class="form-control" name="amount" id="updateLoanAmount" min="0" required/>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE Loan Modal -->
+<div class="modal fade" id="deleteLoanModal" tabindex="-1" aria-labelledby="deleteLoanModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/loans/delete}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteLoanModalLabel">Delete Loan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Loan ID (hidden) -->
+          <input type="hidden" name="id" id="deleteLoanId"/>
+
+          <!-- Tüm alanlar read-only, sadece görsel -->
+          <div class="mb-3">
+            <label>Id:</label>
+            <input type="text" class="form-control" id="deleteViewLoanId" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Name:</label>
+            <input type="text" class="form-control" id="deleteLoanCustomerName" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Address:</label>
+            <input type="text" class="form-control" id="deleteLoanCustomerAddress" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>City:</label>
+            <input type="text" class="form-control" id="deleteLoanCustomerCity" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Branch:</label>
+            <input type="text" class="form-control" id="deleteLoanAccountBranch" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Balance:</label>
+            <input type="text" class="form-control" id="deleteLoanAccountBalance" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Loan Date:</label>
+            <input type="text" class="form-control" id="deleteLoanDate" readonly style="background-color: #dddddd"/>
+          </div>
+          <div class="mb-3">
+            <label>Amount:</label>
+            <input type="text" class="form-control" id="deleteLoanAmount" readonly style="background-color: #dddddd"/>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // UPDATE Loan Modal
+  const updateLoanModal = document.getElementById('updateLoanModal');
+  updateLoanModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+
+    // Gizli alanlar (ID, customerId, accountId)
+    document.getElementById('updateLoanId').value = button.getAttribute('data-id');
+    document.getElementById('updateLoanCustomerId').value = button.getAttribute('data-customerid');
+    document.getElementById('updateLoanAccountId').value = button.getAttribute('data-accountid');
+
+    document.getElementById('updateViewLoanId').value = button.getAttribute('data-id');
+
+    // Read-only müşteri bilgileri
+    document.getElementById('updateLoanCustomerName').value = button.getAttribute('data-customername');
+    document.getElementById('updateLoanCustomerAddress').value = button.getAttribute('data-customeraddress');
+    document.getElementById('updateLoanCustomerCity').value = button.getAttribute('data-customercity');
+
+    // Read-only hesap bilgileri
+    const balance = button.getAttribute('data-accountbalance');
+    document.getElementById('updateLoanAccountBranch').value = button.getAttribute('data-accountbranch');
+    document.getElementById('updateLoanAccountBalance').value = balance;
+
+    // Loan Date ve Amount (düzenlenebilir)
+    document.getElementById('updateLoanDate').value = button.getAttribute('data-loandate');
+    const amountInput = document.getElementById('updateLoanAmount');
+    amountInput.value = button.getAttribute('data-amount');
+    // Burada max'i ayarla
+    amountInput.setAttribute('max', balance);
+  });
+
+  // DELETE Loan Modal
+  const deleteLoanModal = document.getElementById('deleteLoanModal');
+  deleteLoanModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+
+    // Loan ID (silmek için yeterli)
+    document.getElementById('deleteLoanId').value = button.getAttribute('data-id');
+
+    // Diğer alanları read-only gösteriyoruz
+    document.getElementById('deleteViewLoanId').value = button.getAttribute('data-id');
+    document.getElementById('deleteLoanCustomerName').value = button.getAttribute('data-customername');
+    document.getElementById('deleteLoanCustomerAddress').value = button.getAttribute('data-customeraddress');
+    document.getElementById('deleteLoanCustomerCity').value = button.getAttribute('data-customercity');
+    document.getElementById('deleteLoanAccountBranch').value = button.getAttribute('data-accountbranch');
+    document.getElementById('deleteLoanAccountBalance').value = button.getAttribute('data-accountbalance');
+    document.getElementById('deleteLoanDate').value = button.getAttribute('data-loandate');
+    document.getElementById('deleteLoanAmount').value = button.getAttribute('data-amount');
+  });
+</script>
+</body>
+</html>

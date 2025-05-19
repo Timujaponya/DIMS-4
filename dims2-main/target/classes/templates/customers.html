@@ -1,0 +1,273 @@
+<!-- customers.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Customer List</title>
+  <!-- Bootstrap & Icons CDN -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="p-4">
+<div class="container">
+  <h2 class="text-center">Customer List</h2>
+  <div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+  </div>
+  <div class="mb-3">
+    <a class="btn btn-primary" th:href="@{/}">
+      <i class="bi bi-arrow-left"></i> Go Back
+    </a>
+    <!-- Add Customer butonu (modal açar) -->
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+      <i class="bi bi-plus-lg"></i> Add
+    </button>
+  </div>
+
+  <!-- Tablo -->
+  <table class="table table-bordered align-middle">
+    <thead>
+    <tr class="table-light">
+      <th>ID</th>
+      <th>Name</th>
+      <th>Address</th>
+      <th>City</th>
+      <th>Operations</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cust : ${customers}">
+      <td th:text="${cust.id}"></td>
+      <td th:text="${cust.name}"></td>
+      <td th:text="${cust.address}"></td>
+      <td th:text="${cust.city}"></td>
+      <td>
+        <!-- Update -->
+        <button class="btn btn-warning btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#updateCustomerModal"
+                th:attr="data-id=${cust.id},
+                         data-name=${cust.name},
+                         data-address=${cust.address},
+                         data-city=${cust.city}">
+          <i class="bi bi-pencil-square"></i> Update
+        </button>
+        <!-- Delete -->
+        <button class="btn btn-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteCustomerModal"
+                th:attr="data-id=${cust.id},
+                         data-name=${cust.name},
+                         data-address=${cust.address},
+                         data-city=${cust.city}">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+        <!-- Loan -->
+        <button class="btn btn-info btn-sm text-white"
+                data-bs-toggle="modal"
+                data-bs-target="#loanCustomerModal"
+                th:attr="data-customer-id=${cust.id},
+                         data-customer-name=${cust.name},
+                         data-customer-address=${cust.address}">
+          <i class="bi bi-cash-stack"></i> Loan
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ADD Customer Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/customers/add}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCustomerModalLabel">Add Customer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Name:</label>
+            <input type="text" class="form-control" name="name" required/>
+          </div>
+          <div class="mb-3">
+            <label>Address:</label>
+            <input type="text" class="form-control" name="address" required/>
+          </div>
+          <div class="mb-3">
+            <label>City:</label>
+            <input type="text" class="form-control" name="city" required/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE Customer Modal -->
+<div class="modal fade" id="updateCustomerModal" tabindex="-1" aria-labelledby="updateCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/customers/update}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateCustomerModalLabel">Update Customer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- ID gizli -->
+          <input type="hidden" name="id" id="updateCustId"/>
+          <div class="mb-3">
+            <label>Name:</label>
+            <input type="text" class="form-control" name="name" id="updateCustName" required/>
+          </div>
+          <div class="mb-3">
+            <label>Address:</label>
+            <input type="text" class="form-control" name="address" id="updateCustAddress" required/>
+          </div>
+          <div class="mb-3">
+            <label>City:</label>
+            <input type="text" class="form-control" name="city" id="updateCustCity" required/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE Customer Modal -->
+<div class="modal fade" id="deleteCustomerModal" tabindex="-1" aria-labelledby="deleteCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/customers/delete}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteCustomerModalLabel">Delete Customer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- ID gizli -->
+          <input type="hidden" name="id" id="deleteCustId"/>
+          <div class="mb-3">
+            <label>Name:</label>
+            <input type="text" style="background-color: #dddddd" class="form-control" name="name" id="deleteCustName" readonly/>
+          </div>
+          <div class="mb-3">
+            <label>Address:</label>
+            <input type="text" style="background-color: #dddddd" class="form-control" name="address" id="deleteCustAddress" readonly/>
+          </div>
+          <div class="mb-3">
+            <label>City:</label>
+            <input type="text" style="background-color: #dddddd" class="form-control" name="city" id="deleteCustCity" readonly/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN Modal (Customer üzerinden) -->
+<div class="modal fade" id="loanCustomerModal" tabindex="-1" aria-labelledby="loanCustomerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/customers/loan}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loanCustomerModalLabel">Loan Customer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Müşteri ID gizli -->
+          <input type="hidden" name="customerId" id="loanCustId"/>
+          <div class="mb-3">
+            <label>Customer:</label>
+            <input type="text" style="background-color: #dddddd" class="form-control" id="loanCustInfo" readonly/>
+          </div>
+          <div class="mb-3">
+            <label>Select Account:</label>
+            <select class="form-select" name="accountId" id="loanAccountSelect" required>
+              <option value="" disabled selected>-- Choose Account --</option>
+              <option th:each="acc : ${accounts}"
+                      th:value="${acc.id}"
+                      th:text="${acc.branch} + ' - ' + ${acc.balance}"
+                      th:attr="data-balance=${acc.balance}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Loan Date:</label>
+            <input type="date" class="form-control" name="loanDate" required
+                   th:value="${T(java.time.LocalDate).now()}"/>
+          </div>
+          <div class="mb-3">
+            <label>Amount:</label>
+            <input type="number" step="0.01" class="form-control" name="amount" id="loanAmountInput" required min="0"/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-info text-white">Loan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Update Modal
+  const updateCustomerModal = document.getElementById('updateCustomerModal');
+  updateCustomerModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    document.getElementById('updateCustId').value = button.getAttribute('data-id');
+    document.getElementById('updateCustName').value = button.getAttribute('data-name');
+    document.getElementById('updateCustAddress').value = button.getAttribute('data-address');
+    document.getElementById('updateCustCity').value = button.getAttribute('data-city');
+  });
+
+  // Delete Modal
+  const deleteCustomerModal = document.getElementById('deleteCustomerModal');
+  deleteCustomerModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    document.getElementById('deleteCustId').value = button.getAttribute('data-id');
+    document.getElementById('deleteCustName').value = button.getAttribute('data-name');
+    document.getElementById('deleteCustAddress').value = button.getAttribute('data-address');
+    document.getElementById('deleteCustCity').value = button.getAttribute('data-city');
+  });
+
+  // Loan Modal
+  const loanCustomerModal = document.getElementById('loanCustomerModal');
+  loanCustomerModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    const customerId = button.getAttribute('data-customer-id');
+    const name = button.getAttribute('data-customer-name');
+    const address = button.getAttribute('data-customer-address');
+    document.getElementById('loanCustId').value = customerId;
+    document.getElementById('loanCustInfo').value = name + " - " + address;
+  });
+
+  const loanAccountSelect = document.getElementById('loanAccountSelect');
+  const loanAmountInput = document.getElementById('loanAmountInput');
+
+  loanAccountSelect.addEventListener('change', () => {
+    // Seçili <option>
+    const selectedOption = loanAccountSelect.options[loanAccountSelect.selectedIndex];
+    // data-balance değerini al
+    const balance = selectedOption.getAttribute('data-balance');
+    // amount input'unun max özelliğini bu değere ayarla
+    loanAmountInput.setAttribute('max', balance);
+  });
+</script>
+</body>
+</html>

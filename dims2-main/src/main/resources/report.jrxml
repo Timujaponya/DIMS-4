@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="customer_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              uuid="e4b7fa23-3e33-4e18-8899-2a6a2ecb000a">
+
+    <field name="id" class="java.lang.Long"/>
+    <field name="name" class="java.lang.String"/>
+    <field name="city" class="java.lang.String"/>
+    <field name="address" class="java.lang.String"/>
+
+    <title>
+        <band height="40">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <text><![CDATA[MÜŞTERİ RAPORU]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="20">
+            <textField><reportElement x="0" y="0" width="50" height="20"/><textFieldExpression><![CDATA["ID"]]></textFieldExpression></textField>
+            <textField><reportElement x="50" y="0" width="150" height="20"/><textFieldExpression><![CDATA["Ad"]]></textFieldExpression></textField>
+            <textField><reportElement x="200" y="0" width="150" height="20"/><textFieldExpression><![CDATA["Şehir"]]></textFieldExpression></textField>
+            <textField><reportElement x="350" y="0" width="205" height="20"/><textFieldExpression><![CDATA["Adres"]]></textFieldExpression></textField>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="20">
+            <textField><reportElement x="0" y="0" width="50" height="20"/><textFieldExpression><![CDATA[$F{id}]]></textFieldExpression></textField>
+            <textField><reportElement x="50" y="0" width="150" height="20"/><textFieldExpression><![CDATA[$F{name}]]></textFieldExpression></textField>
+            <textField><reportElement x="200" y="0" width="150" height="20"/><textFieldExpression><![CDATA[$F{city}]]></textFieldExpression></textField>
+            <textField><reportElement x="350" y="0" width="205" height="20"/><textFieldExpression><![CDATA[$F{address}]]></textFieldExpression></textField>
+        </band>
+    </detail>
+
+</jasperReport>

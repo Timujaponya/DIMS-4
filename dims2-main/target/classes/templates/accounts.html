@@ -1,0 +1,244 @@
+<!-- accounts.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Account List</title>
+  <!-- Bootstrap & Icons CDN -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="p-4">
+<div class="container">
+  <h2 class="text-center">Account List</h2>
+  <div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+  </div>
+  <div class="mb-3">
+    <a class="btn btn-primary" th:href="@{/}">
+      <i class="bi bi-arrow-left"></i> Go Back
+    </a>
+    <!-- Add Account butonu (modal açar) -->
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+      <i class="bi bi-plus-lg"></i> Add
+    </button>
+  </div>
+
+  <!-- Tablo -->
+  <table class="table table-bordered align-middle">
+    <thead>
+    <tr class="table-light">
+      <th>ID</th>
+      <th>Branch</th>
+      <th>Balance</th>
+      <th>Operations</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="acc : ${accounts}">
+      <td th:text="${acc.id}"></td>
+      <td th:text="${acc.branch}"></td>
+      <td th:text="${acc.balance}"></td>
+      <td>
+        <!-- Update -->
+        <button class="btn btn-warning btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#updateAccountModal"
+                th:attr="data-id=${acc.id},
+                         data-branch=${acc.branch},
+                         data-balance=${acc.balance}">
+          <i class="bi bi-pencil-square"></i> Update
+        </button>
+        <!-- Delete -->
+        <button class="btn btn-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteAccountModal"
+                th:attr="data-id=${acc.id},
+                         data-branch=${acc.branch},
+                         data-balance=${acc.balance}">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+        <!-- Loan -->
+        <button class="btn btn-info btn-sm text-white"
+                data-bs-toggle="modal"
+                data-bs-target="#loanAccountModal"
+                th:attr="data-account-id=${acc.id},
+                         data-account-branch=${acc.branch},
+                         data-account-balance=${acc.balance}">
+          <i class="bi bi-cash-stack"></i> Loan
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ADD Account Modal -->
+<div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/accounts/add}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addAccountModalLabel">Add Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Branch:</label>
+            <input type="text" class="form-control" name="branch" required/>
+          </div>
+          <div class="mb-3">
+            <label>Balance:</label>
+            <input type="number" step="0.01" class="form-control" name="balance" required min="0"/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE Account Modal -->
+<div class="modal fade" id="updateAccountModal" tabindex="-1" aria-labelledby="updateAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/accounts/update}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateAccountModalLabel">Update Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- ID gizli -->
+          <input type="hidden" name="id" id="updateAccId"/>
+          <div class="mb-3">
+            <label>Branch:</label>
+            <input type="text" class="form-control" name="branch" id="updateAccBranch" required/>
+          </div>
+          <div class="mb-3">
+            <label>Balance:</label>
+            <input type="number" step="0.01" class="form-control" name="balance" min="0" id="updateAccBalance" required/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/accounts/delete}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- ID gizli -->
+          <input type="hidden" name="id" id="deleteAccId"/>
+          <div class="mb-3">
+            <label>Branch:</label>
+            <input type="text" style="background-color: #dddddd" class="form-control" name="branch" id="deleteAccBranch" readonly/>
+          </div>
+          <div class="mb-3">
+            <label>Balance:</label>
+            <input type="number" style="background-color: #dddddd" step="0.01" class="form-control" name="balance" id="deleteAccBalance" readonly/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN Modal (Account üzerinden) -->
+<div class="modal fade" id="loanAccountModal" tabindex="-1" aria-labelledby="loanAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/accounts/loan}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loanAccountModalLabel">Loan Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Gizli accountId -->
+          <input type="hidden" name="accountId" id="loanAccId"/>
+          <div class="mb-3">
+            <label>Account:</label>
+            <input type="text" style="background-color: #dddddd" class="form-control" id="loanAccInfo" readonly/>
+          </div>
+          <div class="mb-3">
+            <label>Select Customer:</label>
+            <select class="form-select" name="customerId" required>
+              <option value="" disabled selected>-- Choose Customer --</option>
+              <option th:each="cust : ${customers}"
+                      th:value="${cust.id}"
+                      th:text="${cust.name} + ' - ' + ${cust.address}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Loan Date:</label>
+            <input type="date" class="form-control" name="loanDate" required
+                   th:value="${T(java.time.LocalDate).now()}"/>
+          </div>
+          <div class="mb-3">
+            <label>Amount:</label>
+            <input type="number" step="0.01" class="form-control" name="amount" id="loanAmountInput" required min="0"/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-info text-white">Loan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Update Modal
+  const updateAccountModal = document.getElementById('updateAccountModal');
+  updateAccountModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    document.getElementById('updateAccId').value = button.getAttribute('data-id');
+    document.getElementById('updateAccBranch').value = button.getAttribute('data-branch');
+    document.getElementById('updateAccBalance').value = button.getAttribute('data-balance');
+  });
+
+  // Delete Modal
+  const deleteAccountModal = document.getElementById('deleteAccountModal');
+  deleteAccountModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    document.getElementById('deleteAccId').value = button.getAttribute('data-id');
+    document.getElementById('deleteAccBranch').value = button.getAttribute('data-branch');
+    document.getElementById('deleteAccBalance').value = button.getAttribute('data-balance');
+  });
+
+  // Loan Modal
+  const loanAccModal = document.getElementById('loanAccountModal');
+  loanAccModal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget;
+    const accountId = button.getAttribute('data-account-id');
+    const branch = button.getAttribute('data-account-branch');
+    const balance = button.getAttribute('data-account-balance');
+    document.getElementById('loanAccId').value = accountId;
+    document.getElementById('loanAccInfo').value = branch + " - " + balance;
+    const amountInput = document.getElementById('loanAmountInput');
+    amountInput.setAttribute('max', balance);
+  });
+</script>
+</body>
+</html>
